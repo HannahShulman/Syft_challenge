@@ -6,10 +6,12 @@ import com.syftapp.codetest.data.dao.PostDao
 import com.syftapp.codetest.data.dao.UserDao
 import com.syftapp.codetest.data.model.domain.Post
 import com.syftapp.codetest.data.model.domain.User
+import com.syftapp.codetest.postdetail.PostDetailScreenState
 import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
 import io.mockk.impl.annotations.RelaxedMockK
+import io.mockk.slot
 import io.mockk.verify
 import io.reactivex.Single
 import org.junit.Before
@@ -27,7 +29,9 @@ class BlogRepositoryTest {
     lateinit var blogApi: BlogApi
 
     private val sut by lazy {
-        BlogRepository(postDao, commentDao, userDao, blogApi)
+        BlogRepository(postDao, commentDao, userDao, blogApi).apply {
+            fetchedAllPosts = true
+        }
     }
 
     private val anyUser = User(1, "name", "username", "email")
@@ -56,19 +60,23 @@ class BlogRepositoryTest {
 
     @Test
     fun `posts value fetched from api is inserted to the cache`() {
-        every { postDao.getAll() } returns Single.just(listOf())
-        every { blogApi.getPosts() } returns Single.just(listOf(anyPost))
+        sut.fetchedAllPosts = false
+        val slot = slot<Int>()
 
-        sut.getPosts().test()
+        every { postDao.getAll() } returns Single.just(listOf())
+        every { blogApi.getPosts(any()) } returns Single.just(listOf(anyPost))
+
+        sut.getPosts(4).test()
 
         verify {
-            blogApi.getPosts()
+            blogApi.getPosts(any())
             postDao.insertAll(*listOf(anyPost).toTypedArray())
         }
     }
 
     @Test
     fun `users fetched from api are inserted in to the cache`() {
+        sut.fetchedAllPosts = true
         every { userDao.getAll() } returns Single.just(listOf())
         every { blogApi.getUsers() } returns Single.just(listOf(anyUser))
 
@@ -82,9 +90,10 @@ class BlogRepositoryTest {
 
     @Test
     fun `value from api is returned to caller`() {
+        sut.fetchedAllPosts = false
         every { userDao.getAll() } returns Single.just(listOf())
         every { postDao.getAll() } returns Single.just(listOf())
-        every { blogApi.getPosts() } returns Single.just(listOf(anyPost))
+        every { blogApi.getPosts(any()) } returns Single.just(listOf(anyPost))
         every { blogApi.getUsers() } returns Single.just(listOf(anyUser))
 
         val postObserver = sut.getPosts().test()
@@ -96,9 +105,10 @@ class BlogRepositoryTest {
 
     @Test
     fun `api failing returns reactive error on chain`() {
+        sut.fetchedAllPosts = false
         every { postDao.getAll() } returns Single.just(listOf())
         val error = Throwable()
-        every { blogApi.getPosts() } throws error
+        every { blogApi.getPosts(any()) } throws error
 
         val observer = sut.getPosts().test()
 
