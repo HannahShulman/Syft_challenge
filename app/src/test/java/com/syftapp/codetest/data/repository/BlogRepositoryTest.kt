@@ -114,4 +114,27 @@ class BlogRepositoryTest {
 
         observer.assertError(error)
     }
+
+    @Test
+    fun `GIVEN fetchedAllPosts true WHEN getPosts THEN api getPosts not called`(){
+        sut.fetchedAllPosts = true
+        every { userDao.getAll() } returns Single.just(listOf())
+        every { blogApi.getUsers() } returns Single.just(listOf(anyUser))
+
+        sut.getPosts().test()
+
+        verify (exactly = 0){ blogApi.getPosts() }
+    }
+
+    @Test
+    fun `GIVEN fetchedAllPosts false WHEN getPosts THEN api getPosts is called`(){
+        sut.fetchedAllPosts = false
+        every { postDao.getAll() } returns Single.just(emptyList())
+        every { blogApi.getUsers() } returns Single.just(listOf(anyUser))
+        every { blogApi.getPosts() } returns Single.just(listOf(anyPost))
+
+        sut.getPosts(3).test()
+
+        verify { blogApi.getPosts(any()) }
+    }
 }
