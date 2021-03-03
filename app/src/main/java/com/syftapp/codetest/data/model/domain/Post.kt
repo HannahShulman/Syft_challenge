@@ -24,4 +24,8 @@ data class Post(
     val title: String,
     @ColumnInfo(name = "body")
     val body: String
-)
+) : Pageable {
+
+    @ColumnInfo(name = "page")
+    override var page: Int = 0
+}

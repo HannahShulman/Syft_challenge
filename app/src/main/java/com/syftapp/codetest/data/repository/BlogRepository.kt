@@ -5,6 +5,7 @@ import com.syftapp.codetest.data.dao.CommentDao
 import com.syftapp.codetest.data.dao.PostDao
 import com.syftapp.codetest.data.dao.UserDao
 import com.syftapp.codetest.data.model.domain.Comment
+import com.syftapp.codetest.data.model.domain.Pageable
 import com.syftapp.codetest.data.model.domain.Post
 import com.syftapp.codetest.data.model.domain.User
 import io.reactivex.Completable
@@ -18,6 +19,9 @@ class BlogRepository(
     private val userDao: UserDao,
     private val blogApi: BlogApi
 ) : KoinComponent, BlogDataProvider {
+
+
+    override var fetchedAllPosts = false //flag if loading all data has completed.
 
     override fun getUsers(): Single<List<User>> {
         return fetchData(
@@ -35,11 +39,14 @@ class BlogRepository(
         )
     }
 
-    override fun getPosts(): Single<List<Post>> {
-        return fetchData(
+    override fun getPosts(page: Int?): Single<List<Post>> {
+        return fetchPagedData(
             local = { postDao.getAll() },
-            remote = { blogApi.getPosts() },
-            insert = { value -> postDao.insertAll(*value.toTypedArray()) }
+            remote = { blogApi.getPosts(it) },
+            insert = { value, currentPage ->
+                value.map { it.page = currentPage }
+                postDao.insertAll(*value.toTypedArray())
+            }
         )
     }
 
@@ -53,15 +60,47 @@ class BlogRepository(
         insert: (insertValue: List<T>) -> Completable
     ): Single<List<T>> {
 
-        return local.invoke()
+        return local()
             .flatMap {
                 if (it.isNotEmpty()) {
                     Single.just(it)
                 } else {
-                    remote.invoke()
+                    remote()
                         .map { value ->
                             insert.invoke(value).subscribe();
                             value
+                        }
+                }
+            }
+    }
+
+
+    //implement logic for data that can be paged.
+    //data is stored in the db, with the page, so have reference in the future
+    // what was the last fetched page, and then fetch the following one.
+    //This repository has a flag, if reached end of posts list on server (dislike this implementation)
+    //This method will be called from an upper layer (presenter/vm),
+    // which invokes this by the users
+    //action of scrolling to end of list,
+    //The repository is also responsible for calculating which page to fetch remotely by fetching the
+    //max page from db +1.
+    private fun <T : Pageable> fetchPagedData(
+        local: () -> Single<List<T>>,
+        remote: (page: Int) -> Single<List<T>>,
+        insert: (insertValue: List<T>, page: Int) -> Completable
+    ): Single<List<T>> {
+        return local()
+            .flatMap { list ->
+                val last = list.maxBy { (it as? Pageable)?.page ?: 0 }?.page ?: 0
+                if (fetchedAllPosts) {
+                    Single.just(list)
+                } else {
+                    val currentPage = last + 1
+                    remote(currentPage)
+                        .map { value ->
+                            fetchedAllPosts = value.isEmpty()
+                            insert(value, currentPage).subscribe()
+                            list + value
                         }
                 }
             }

@@ -8,10 +8,15 @@ import com.syftapp.codetest.data.repository.BlogDataProvider
 
 class BlogApi(private val blogService: BlogService) : BlogDataProvider {
 
-    override fun getUsers() = blogService.getUsers().map { it.apiToDomain(UserMapper) }
+    override var fetchedAllPosts: Boolean = false
 
-    override fun getComments() = blogService.getComments().map { it.apiToDomain(CommentMapper) }
+    override fun getUsers() =
+        blogService.getUsers().map { it.apiToDomain(UserMapper) }
 
-    override fun getPosts() = blogService.getPosts().map { it.apiToDomain(PostMapper) }
+    override fun getComments() =
+        blogService.getComments().map { it.apiToDomain(CommentMapper) }
+
+    override fun getPosts(page: Int?) =
+        blogService.getPosts(page = page).map { it.apiToDomain(PostMapper) }
 
 }

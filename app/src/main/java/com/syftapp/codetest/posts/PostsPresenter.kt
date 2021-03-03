@@ -8,6 +8,8 @@ import org.koin.core.KoinComponent
 
 class PostsPresenter(private val getPostsUseCase: GetPostsUseCase) : KoinComponent {
 
+    private var currentState: PostScreenState? = null
+
     private val compositeDisposable = CompositeDisposable()
     private lateinit var view: PostsView
 
@@ -35,4 +37,14 @@ class PostsPresenter(private val getPostsUseCase: GetPostsUseCase) : KoinCompone
             { view.render(PostScreenState.DataAvailable(it)) },
             { view.render(PostScreenState.Error(it)) }
         )
+
+    fun loadNextPage() {
+        //wait to load next page, make sure that not busy loading
+        if (currentState == PostScreenState.Loading) return
+        loadPosts()
+    }
+
+    fun setState(state: PostScreenState) {
+        currentState = state
+    }
 }

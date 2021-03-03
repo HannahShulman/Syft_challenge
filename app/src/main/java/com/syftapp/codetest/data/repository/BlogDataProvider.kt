@@ -7,10 +7,12 @@ import io.reactivex.Single
 
 interface BlogDataProvider {
 
+    var fetchedAllPosts: Boolean
+
     fun getUsers(): Single<List<User>>
 
     fun getComments(): Single<List<Comment>>
 
-    fun getPosts(): Single<List<Post>>
+    fun getPosts(page: Int? = null): Single<List<Post>>
 
 }

@@ -3,8 +3,10 @@ package com.syftapp.codetest.posts
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.syftapp.codetest.Navigation
 import com.syftapp.codetest.R
 import com.syftapp.codetest.data.model.domain.Post
@@ -17,16 +19,37 @@ class PostsActivity : AppCompatActivity(), PostsView, KoinComponent {
     private val presenter: PostsPresenter by inject()
     private lateinit var navigation: Navigation
 
-    private lateinit var adapter: PostsAdapter
+    private val adapter: PostsAdapter by lazy {
+        PostsAdapter(presenter::showDetails)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_posts)
         navigation = Navigation(this)
 
-        listOfPosts.layoutManager = LinearLayoutManager(this)
+        listOfPosts.adapter = adapter
         val separator = DividerItemDecoration(this, DividerItemDecoration.VERTICAL)
         listOfPosts.addItemDecoration(separator)
+        listOfPosts.itemAnimator = DefaultItemAnimator().apply {
+            this.supportsChangeAnimations = false
+        }
+        listOfPosts.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+                val totalItemCount: Int = recyclerView.layoutManager?.itemCount ?: 0
+                val lastVisibleItemPosition: Int =
+                    (recyclerView.layoutManager as LinearLayoutManager)
+                        .findLastCompletelyVisibleItemPosition()
+                if (lastVisibleItemPosition == totalItemCount.minus(1)) {
+                    //when the user has scrolled all the way to the end
+                    //the next page needs to be fetched
+                    //the view should not know what page its up to
+                    //just notifying the presenter the actioned is required
+                    presenter.loadNextPage()
+                }
+            }
+        })
 
         presenter.bind(this)
     }
@@ -37,6 +60,7 @@ class PostsActivity : AppCompatActivity(), PostsView, KoinComponent {
     }
 
     override fun render(state: PostScreenState) {
+        presenter.setState(state)
         when (state) {
             is PostScreenState.Loading -> showLoading()
             is PostScreenState.DataAvailable -> showPosts(state.posts)
@@ -48,7 +72,6 @@ class PostsActivity : AppCompatActivity(), PostsView, KoinComponent {
 
     private fun showLoading() {
         error.visibility = View.GONE
-        listOfPosts.visibility = View.GONE
         loading.visibility = View.VISIBLE
     }
 
@@ -56,17 +79,11 @@ class PostsActivity : AppCompatActivity(), PostsView, KoinComponent {
         loading.visibility = View.GONE
     }
 
-    private fun showPosts(posts: List<Post>) {
-        // this is a fairly crude implementation, if it was Flowable, it would
-        // be better to use DiffUtil and consider notifyRangeChanged, notifyItemInserted, etc
-        // to preserve animations on the RecyclerView
-        adapter = PostsAdapter(posts, presenter)
-        listOfPosts.adapter = adapter
-        listOfPosts.visibility = View.VISIBLE
-    }
+    private fun showPosts(posts: List<Post>) =
+        adapter.submitList(posts)
 
     private fun showError(message: String) {
         error.visibility = View.VISIBLE
-        error.setText(message)
+        error.text = message
     }
 }
