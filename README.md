@@ -7,12 +7,12 @@ Make sure you **add unit tests** for code that you write!
  
 In no particular order, the tasks are:
 
-#### 1. Add pagination
+#### 1. Add pagination - V
 The source data comes from [here](https://jsonplaceholder.typicode.com/posts) so you can tweak the URL to read `?_page=2&_limit=20` (for example) to make the data paginated.
 
 Bonus: leave some comments in the code around this specific way of paginating, and if there are any issues you can see by fetching "page 1", "page 2", and limiting.
 
-#### 2. Animate new items coming in
+#### 2. Animate new items coming in - V
 New items being added to the recyclerview should animate in when a new page is loaded.
 
 #### 3. Delete a post from the list
@@ -20,7 +20,7 @@ Add something to a list item that allows you to delete that item. The API will a
 
 Bonus: animate the list item removal so that the other items move in to its place gracefully.
 
-#### 4. Fix broken tests
+#### 4. Fix broken tests - V
 There are some unit tests that are broken, fix them.
 
 #### 5. (Bonus) Delete a post from the post details screen
