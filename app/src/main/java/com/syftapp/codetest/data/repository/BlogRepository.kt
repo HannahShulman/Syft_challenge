@@ -40,11 +40,17 @@ class BlogRepository(
     }
 
     override fun deletePost(postId: Int): Single<List<Post>> {
-        return fetchData(
-            local = { postDao.getAllNotDeleted(postId) },
-            remote = { blogApi.deletePost(postId) },
-            insert = { _ -> postDao.deletePost(postId) }
-        )
+        return postDao.getAllNotDeleted(postId)
+        //if data would return:
+        //- new list of posts, I would use a transaction, and update the db
+        //-just a response (Successful/error) would update the db accordingly, and fetch.
+        //Now is a temp solution
+
+        //fetchData(
+//            local = { postDao.getAllNotDeleted(postId) },
+//            remote = { blogApi.deletePost(postId) },
+//            insert = { _ -> postDao.deletePost(postId) }
+//        )
     }
 
     override fun getPosts(page: Int?): Single<List<Post>> {

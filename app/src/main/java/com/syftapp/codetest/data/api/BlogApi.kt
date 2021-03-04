@@ -22,5 +22,5 @@ class BlogApi(private val blogService: BlogService) : BlogDataProvider {
         blogService.getPosts(page = page).map { it.apiToDomain(PostMapper) }
 
     override fun deletePost(postId: Int): Single<List<Post>> =
-         blogService.deletePost().map { it.apiToDomain(PostMapper) }
+         blogService.deletePost(postId).map { it.apiToDomain(PostMapper) }
 }

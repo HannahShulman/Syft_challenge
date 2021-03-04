@@ -3,7 +3,6 @@ package com.syftapp.codetest.data.api
 import com.syftapp.codetest.data.model.domain.Comment
 import com.syftapp.codetest.data.model.domain.Post
 import com.syftapp.codetest.data.model.domain.User
-import io.mockk.mockk
 import io.reactivex.Single
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
@@ -61,6 +60,23 @@ class BlogApiTest {
                     name = apiComment.name,
                     email = apiComment.email,
                     body = apiComment.body
+                )
+            )
+    }
+
+    @Test
+    fun `GIVEN postId to delete WHEN deletePost THEN getPostList`() {
+        val deletePost = rxValue(blogService.deletePost(3)).get(0)
+        val comments = rxValue(sut.deletePost(3))
+
+        assertThat(comments)
+            .hasSize(5)
+            .contains(
+                Post(
+                    id = deletePost.id,
+                    userId = deletePost.userId,
+                    title = deletePost.title,
+                    body = deletePost.body
                 )
             )
     }
