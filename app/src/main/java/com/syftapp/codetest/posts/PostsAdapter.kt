@@ -18,6 +18,8 @@ class PostsAdapter(
     private val onItemClick: (post: Post) -> Unit
 ) : ListAdapter<Post, PostViewHolder>(diffUtil) {
 
+    var lastList = listOf<Post>()
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PostViewHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
         val view = layoutInflater.inflate(R.layout.view_post_list_item, parent, false)
@@ -25,8 +27,16 @@ class PostsAdapter(
         return PostViewHolder(view, onItemClick)
     }
 
+    override fun onCurrentListChanged(
+        previousList: MutableList<Post>,
+        currentList: MutableList<Post>
+    ) {
+        super.onCurrentListChanged(previousList, currentList)
+        lastList = previousList
+    }
+
     override fun onBindViewHolder(holder: PostViewHolder, position: Int) {
-        holder.bind(currentList[position])
+        holder.bind(currentList[position], !lastList.contains(currentList[position]))
     }
 
     companion object {
@@ -48,12 +58,14 @@ class PostViewHolder(
     val onItemClick: (post: Post) -> Unit
 ) : RecyclerView.ViewHolder(view) {
 
-    fun bind(item: Post) {
+    fun bind(item: Post, newItem: Boolean) {
         //added the position to indicate that different items are displayed
         view.postTitle.text = "$adapterPosition ${item.title}"
         view.bodyPreview.text = item.body
         view.setOnClickListener { onItemClick(item) }
-        itemView.animation =
-            AnimationUtils.loadAnimation(itemView.context, R.anim.fade_in_alpha)
+        if (newItem) {
+            itemView.animation =
+                AnimationUtils.loadAnimation(itemView.context, R.anim.fade_in_alpha)
+        }
     }
 }
