@@ -41,3 +41,12 @@ Please don't spend more than 3 hours on the test, we understand that your time i
 
 Please provide any additional information that you want to communicate back to the reviewer here:
 
+NOTES:
+-This is my first time touching Koin tests, and due to time limitation, I have commented out
+a presenter test, if I have additional time, I will investigate and sole.
+
+ORDER OF TASKS:
+1. Tests - first fix the broken tests. Broken tests mean that an expectation of
+ours isnt working, therefore, either must change the expectation, or find out what the broken logic is.
+
+2. Order of tasks, each task comes along with its test.
