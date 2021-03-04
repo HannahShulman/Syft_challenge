@@ -21,7 +21,7 @@ interface BlogService {
     fun getPosts(@Query("_page") page: Int? = null, @Query("_limit") limit: Int? = null): Single<List<Post>>
 
     @DELETE("/posts")
-    fun deletePost(): Single<List<Post>>
+    fun deletePost(postId: Int): Single<List<Post>>
 
     companion object {
         fun createService(retrofit: Retrofit) = retrofit.create(BlogService::class.java)

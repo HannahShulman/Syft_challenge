@@ -33,6 +33,10 @@ class StubBlogService : BlogService {
         ))
     }
 
+    override fun deletePost(postId: Int): Single<List<Post>> {
+        return getPosts()
+    }
+
     private fun getUserWithId(id: Int): User {
         val stubCompany = Company("company", "catchphrase", "bs")
         val stubLatLng = LatLong("0", "0")

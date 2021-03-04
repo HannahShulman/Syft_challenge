@@ -137,4 +137,16 @@ class BlogRepositoryTest {
 
         verify { blogApi.getPosts(any()) }
     }
+
+    @Test
+    fun `GIVEN deletePost id WHEN deletePost THEN postDao getAllNotDeleted is called`(){
+        sut.fetchedAllPosts = false
+        every { postDao.getAll() } returns Single.just(emptyList())
+        every { blogApi.getUsers() } returns Single.just(listOf(anyUser))
+        every { blogApi.getPosts() } returns Single.just(listOf(anyPost))
+
+        sut.deletePost(3).test()
+
+        verify { postDao.getAllNotDeleted(any()) }
+    }
 }

@@ -20,13 +20,16 @@ class PostsPresenterTest {
     @MockK
     lateinit var getPostsUseCase: GetPostsUseCase
 
+    @MockK
+    lateinit var deletePostUseCase: DeletePostUseCase
+
     @RelaxedMockK
     lateinit var view: PostsView
 
     private val anyPost = Post(1, 1, "title", "body")
 
     private val sut by lazy {
-        PostsPresenter(getPostsUseCase)
+        PostsPresenter(getPostsUseCase, deletePostUseCase)
     }
 
     @Before
@@ -78,5 +81,15 @@ class PostsPresenterTest {
         //due to time limitations,
         // (and learning Koin testing, I need to see how this can be spied
 //        verify { sut.loadPosts() }
+    }
+
+    @Test
+    fun `GIVEN post to delete WHEN deletePost is called THEN deletePostUseCase is executed`() {
+        every { getPostsUseCase.execute() } returns Single.just(listOf(anyPost))
+        every { deletePostUseCase.execute(anyPost) } returns Single.just(listOf())
+
+        sut.deletePost(anyPost)
+
+        verify { deletePostUseCase.execute(anyPost) }
     }
 }
