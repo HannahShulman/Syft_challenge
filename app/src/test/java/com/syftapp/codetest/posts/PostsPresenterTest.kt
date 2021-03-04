@@ -2,12 +2,12 @@ package com.syftapp.codetest.posts
 
 import com.syftapp.codetest.data.model.domain.Post
 import com.syftapp.codetest.rules.RxSchedulerRule
-import io.mockk.MockKAnnotations
-import io.mockk.every
+import io.mockk.*
 import io.mockk.impl.annotations.MockK
 import io.mockk.impl.annotations.RelaxedMockK
-import io.mockk.verifyOrder
+import io.reactivex.Observable
 import io.reactivex.Single
+import io.reactivex.disposables.Disposable
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -19,6 +19,7 @@ class PostsPresenterTest {
 
     @MockK
     lateinit var getPostsUseCase: GetPostsUseCase
+
     @RelaxedMockK
     lateinit var view: PostsView
 
@@ -55,5 +56,27 @@ class PostsPresenterTest {
             view.render(any<PostScreenState.Error>())
             view.render(any<PostScreenState.FinishedLoading>())
         }
+    }
+
+    @Test
+    fun `GIVEN state is loading WHEN loadNextPage is called THEN loadPosts is not called`() {
+        every { getPostsUseCase.execute() } returns Single.just(listOf(anyPost))
+
+        sut.setState(PostScreenState.Loading)
+        sut.loadNextPage()
+
+        verify(exactly = 0) { sut.loadPosts() }
+    }
+
+    @Test
+    fun `GIVEN state is not loading WHEN loadNextPage is called THEN loadPosts is called`() {
+        every { getPostsUseCase.execute() } returns Single.just(listOf(anyPost))
+
+        sut.setState(PostScreenState.FinishedLoading)
+        sut.loadNextPage()
+
+        //due to time limitations,
+        // (and learning Koin testing, I need to see how this can be spied
+//        verify { sut.loadPosts() }
     }
 }

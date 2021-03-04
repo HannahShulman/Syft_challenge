@@ -28,7 +28,7 @@ class PostsPresenter(private val getPostsUseCase: GetPostsUseCase) : KoinCompone
         view.render(PostScreenState.PostSelected(post))
     }
 
-    private fun loadPosts() = getPostsUseCase.execute()
+    fun loadPosts() = getPostsUseCase.execute()
         .subscribeOn(Schedulers.io())
         .observeOn(AndroidSchedulers.mainThread())
         .doOnSubscribe { view.render(PostScreenState.Loading) }
