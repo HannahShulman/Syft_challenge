@@ -3,6 +3,7 @@ package com.syftapp.codetest.posts
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AnimationUtils
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -52,5 +53,7 @@ class PostViewHolder(
         view.postTitle.text = "$adapterPosition ${item.title}"
         view.bodyPreview.text = item.body
         view.setOnClickListener { onItemClick(item) }
+        itemView.animation =
+            AnimationUtils.loadAnimation(itemView.context, R.anim.fade_in_alpha)
     }
 }
