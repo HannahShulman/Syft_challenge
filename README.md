@@ -42,16 +42,42 @@ Please don't spend more than 3 hours on the test, we understand that your time i
 Please provide any additional information that you want to communicate back to the reviewer here:
 
 NOTES:
--This is my first time touching Koin tests, and due to time limitation, I have commented out
-a presenter test, if I have additional time, I will investigate and sole.
+-This was a really interesting task for me for the following reasons:
+a.First time I have tested Koin (and due to time limitation, I have commented out
+                                a presenter test, if I have additional time, I will investigate and solve).
+b.Haven't implemented MVP for at least 2 plus years.
 
-ORDER OF TASKS:
+-Never implements Pagination, was a new strategy for me to implement, hope I got that right.
+
+c.Changes to code, although I would prob have  done some changes, I was focused on getting the tasks
+done, and obviously keeping to the original project's language.
+
+-Time spent: I hate to postpone tasks therefore implements last night,
+ put into it approx 3 hours(3 plus with a break), and would love to hear from you, and get feedback on this one.
+ (and I prob have some questions on the current implementation)
+
+
+
+ORDER OF IMPLEMENTING TASKS:
 1. Tests - first fix the broken tests. Broken tests mean that an expectation of
 ours isn't working, therefore, either must change the expectation, or find out what the broken logic is.
 
 2. Order of tasks, each task comes along with its test.
 
+3. Pagination - See answer to bonus question as part of the documentation.
+
 3. Delete post from list, I am aware of the fact that the behavior is a little wired,
 this is due to not getting the correct data back from the server.
+(I am not aure what you expected, having a more correct implementation, or having the behaviour right.
+I chose the implementation, (could have fakely removed the item, from the adapter, then the items would
+update nicely with an animation
 In fact I would want to load the data directly from the db, however,
 due to the db being updated with the full list, its a little hacky(returned data is a full list)
+
+4. Unfortunately under the time limits, I was unable to complete the deletion from the detailed screen.
+Had to many doubts of what the right way to implement would be, is it with onActivityResult?
+observing the db data when resuming the calling activity
+or maybe even working with a live data to reflect changes on the db?
+
+
+

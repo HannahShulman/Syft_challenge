@@ -98,6 +98,14 @@ class BlogRepository(
     //action of scrolling to end of list,
     //The repository is also responsible for calculating which page to fetch remotely by fetching the
     //max page from db +1.
+
+
+    //Issues with pagination, no guarantee that data has not changed.
+    //Can call page = 2 get a list of 3 then call again and get either a different list or the data may have been removed
+    //Can guarantee data consistancy.
+    //In fact this is assuming that backed supports out of index paged (if it doesn't
+    // the developers must be fired or taught :) :) )
+
     private fun <T : Pageable> fetchPagedData(
         local: () -> Single<List<T>>,
         remote: (page: Int) -> Single<List<T>>,
