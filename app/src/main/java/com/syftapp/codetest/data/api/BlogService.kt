@@ -5,6 +5,7 @@ import com.syftapp.codetest.data.model.api.Post
 import com.syftapp.codetest.data.model.api.User
 import io.reactivex.Single
 import retrofit2.Retrofit
+import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.Query
 
@@ -18,6 +19,9 @@ interface BlogService {
 
     @GET("/posts")
     fun getPosts(@Query("_page") page: Int? = null, @Query("_limit") limit: Int? = null): Single<List<Post>>
+
+    @DELETE("/posts")
+    fun deletePost(): Single<List<Post>>
 
     companion object {
         fun createService(retrofit: Retrofit) = retrofit.create(BlogService::class.java)

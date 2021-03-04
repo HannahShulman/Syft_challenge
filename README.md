@@ -15,7 +15,7 @@ Bonus: leave some comments in the code around this specific way of paginating, a
 #### 2. Animate new items coming in - V
 New items being added to the recyclerview should animate in when a new page is loaded.
 
-#### 3. Delete a post from the list
+#### 3. Delete a post from the list - V
 Add something to a list item that allows you to delete that item. The API will accept the `DELETE` verb, but subsequent fetches will return the item again; this will be expected when reviewing the test.
 
 Bonus: animate the list item removal so that the other items move in to its place gracefully.
@@ -47,6 +47,11 @@ a presenter test, if I have additional time, I will investigate and sole.
 
 ORDER OF TASKS:
 1. Tests - first fix the broken tests. Broken tests mean that an expectation of
-ours isnt working, therefore, either must change the expectation, or find out what the broken logic is.
+ours isn't working, therefore, either must change the expectation, or find out what the broken logic is.
 
 2. Order of tasks, each task comes along with its test.
+
+3. Delete post from list, I am aware of the fact that the behavior is a little wired,
+this is due to not getting the correct data back from the server.
+In fact I would want to load the data directly from the db, however,
+due to the db being updated with the full list, its a little hacky(returned data is a full list)

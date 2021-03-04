@@ -1,9 +1,6 @@
 package com.syftapp.codetest.data.dao
 
-import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
-import androidx.room.Query
+import androidx.room.*
 import com.syftapp.codetest.data.model.domain.Post
 import io.reactivex.Completable
 import io.reactivex.Maybe
@@ -18,6 +15,12 @@ interface PostDao {
     @Query("SELECT * FROM post")
     fun getAll(): Single<List<Post>>
 
+    @Query("SELECT * FROM post WHERE id !=:postId")
+    fun getAllNotDeleted(postId: Int): Single<List<Post>>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertAll(vararg posts: Post): Completable
+
+    @Query("DELETE FROM post WHERE id =:postId")
+    fun deletePost(postId: Int): Completable
 }

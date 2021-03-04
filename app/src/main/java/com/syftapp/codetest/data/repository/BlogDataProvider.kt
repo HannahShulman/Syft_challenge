@@ -15,4 +15,5 @@ interface BlogDataProvider {
 
     fun getPosts(page: Int? = null): Single<List<Post>>
 
+    fun deletePost(postId: Int):  Single<List<Post>>
 }

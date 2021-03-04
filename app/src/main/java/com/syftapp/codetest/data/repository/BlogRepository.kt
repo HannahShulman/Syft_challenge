@@ -39,6 +39,14 @@ class BlogRepository(
         )
     }
 
+    override fun deletePost(postId: Int): Single<List<Post>> {
+        return fetchData(
+            local = { postDao.getAllNotDeleted(postId) },
+            remote = { blogApi.deletePost(postId) },
+            insert = { _ -> postDao.deletePost(postId) }
+        )
+    }
+
     override fun getPosts(page: Int?): Single<List<Post>> {
         return fetchPagedData(
             local = { postDao.getAll() },

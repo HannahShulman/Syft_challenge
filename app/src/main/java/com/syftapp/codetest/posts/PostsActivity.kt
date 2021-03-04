@@ -20,7 +20,7 @@ class PostsActivity : AppCompatActivity(), PostsView, KoinComponent {
     private lateinit var navigation: Navigation
 
     private val adapter: PostsAdapter by lazy {
-        PostsAdapter(presenter::showDetails)
+        PostsAdapter(presenter::showDetails, presenter::deletePost)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

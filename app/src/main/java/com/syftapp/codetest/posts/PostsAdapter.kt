@@ -15,7 +15,8 @@ import kotlinx.android.synthetic.main.view_post_list_item.view.*
 // which views need recreating or data reset.
 
 class PostsAdapter(
-    private val onItemClick: (post: Post) -> Unit
+    private val onItemClick: (post: Post) -> Unit,
+    private val onPostDelete: (post: Post) -> Unit
 ) : ListAdapter<Post, PostViewHolder>(diffUtil) {
 
     var lastList = listOf<Post>()
@@ -24,7 +25,7 @@ class PostsAdapter(
         val layoutInflater = LayoutInflater.from(parent.context)
         val view = layoutInflater.inflate(R.layout.view_post_list_item, parent, false)
 
-        return PostViewHolder(view, onItemClick)
+        return PostViewHolder(view, onItemClick, onPostDelete)
     }
 
     override fun onCurrentListChanged(
@@ -42,7 +43,7 @@ class PostsAdapter(
     companion object {
         val diffUtil = object : DiffUtil.ItemCallback<Post>() {
             override fun areItemsTheSame(oldItem: Post, newItem: Post): Boolean {
-                return oldItem.id == newItem.id
+                return true
             }
 
             override fun areContentsTheSame(oldItem: Post, newItem: Post): Boolean {
@@ -55,13 +56,15 @@ class PostsAdapter(
 
 class PostViewHolder(
     private val view: View,
-    val onItemClick: (post: Post) -> Unit
+    val onItemClick: (post: Post) -> Unit,
+    val onPostDelete: (post: Post) -> Unit
 ) : RecyclerView.ViewHolder(view) {
 
     fun bind(item: Post, newItem: Boolean) {
         //added the position to indicate that different items are displayed
-        view.postTitle.text = "$adapterPosition ${item.title}"
+        view.postTitle.text = "${item.id}.  ${item.title}"
         view.bodyPreview.text = item.body
+        view.icDelete.setOnClickListener { onPostDelete(item) }
         view.setOnClickListener { onItemClick(item) }
         if (newItem) {
             itemView.animation =
